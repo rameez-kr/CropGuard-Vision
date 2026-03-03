@@ -3,7 +3,7 @@
 
 /* custom base style */
 body {
-  @apply bg-gray-50 text-grey-900 antialiased;
+  @apply bg-gray-50 text-gray-900 antialiased;
   font-family : "Inter", system-ui, -apple-system, sans-serif;
 }
 

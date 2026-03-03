@@ -1,16 +1,114 @@
-# React + Vite
+# CropGuard Vision - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+AI-powered crop disease detection and treatment advisory system frontend built with React, Vite, and Tailwind CSS.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🌱 Image-based crop disease detection
+- 🗣️ Voice input support
+- 🔊 Text-to-speech treatment advice
+- 🌐 Multi-language support (English, Hindi, Tamil, Telugu, French, Spanish)
+- 📱 Progressive Web App (PWA) support
+- 📊 Diagnosis history tracking
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **React 18** - UI framework
+- **Vite** - Build tool and dev server
+- **Tailwind CSS** - Utility-first CSS framework
+- **React Router** - Client-side routing
+- **Axios** - HTTP client
+- **Lucide React** - Icons
+- **React Markdown** - Markdown rendering
 
-## Expanding the ESLint configuration
+## Prerequisites
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Node.js 20+ and npm
+- Backend API running on `http://localhost:8000`
+
+## Installation
+
+```bash
+# Install dependencies
+npm install
+
+# Create environment file
+cp .env.example .env
+
+# Update .env with your API URL if different
+# VITE_API_BASE_URL=http://localhost:8000
+```
+
+## Development
+
+```bash
+# Start development server
+npm run dev
+
+# The app will be available at http://localhost:5173
+```
+
+## Building
+
+```bash
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+## Testing
+
+```bash
+# Run tests
+npm test
+
+# Run tests with coverage
+npm test -- --coverage
+```
+
+## Project Structure
+
+```
+src/
+├── components/
+│   ├── common/          # Reusable UI components
+│   ├── layout/          # Layout components (Header, Footer)
+│   ├── upload/          # Image upload related components
+│   ├── results/         # Disease results display components
+│   └── voice/           # Voice input/output components
+├── pages/               # Page components
+├── hooks/               # Custom React hooks
+├── services/            # API and audio services
+├── context/             # React context for global state
+├── constants/           # Configuration constants
+├── test/                # Test utilities
+├── App.jsx              # Main app component with routing
+└── main.jsx             # App entry point
+```
+
+## Environment Variables
+
+- `VITE_API_BASE_URL` - Backend API base URL (default: `http://localhost:8000`)
+
+## API Integration
+
+The frontend communicates with the FastAPI backend through the following endpoints:
+
+- `POST /api/predict` - Disease prediction from image
+- `POST /api/voice-query` - Voice-based query
+- `GET /api/crops` - Get supported crops
+- `GET /api/languages` - Get supported languages
+- `GET /api/history/{session_id}` - Get diagnosis history
+- `GET /api/health` - Health check
+
+## Browser Support
+
+- Modern browsers (Chrome, Firefox, Safari, Edge)
+- Mobile browsers with camera access support
+- Voice input requires microphone permissions
+
+## License
+
+MIT
