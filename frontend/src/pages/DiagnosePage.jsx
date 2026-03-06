@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import ImageUploader from "../components/upload/ImageUploader";
 import CropSelector from "../components/upload/CropSelector";
 import SeasonSelector from "../components/upload/SeasonSelector";
@@ -13,14 +14,20 @@ import Disclaimer from "../components/common/Disclaimer";
 import Button from "../components/common/Button";
 import usePrediction from "../hooks/usePrediction";
 import useVoice from "../hooks/useVoice";
-import { Search } from "lucide-react";
+import api from "../services/api";
+import { Search, ShieldAlert } from "lucide-react";
+import { useTranslation } from "../hooks/useTranslation";
 
 export default function DiagnosePage() {
+  const [searchParams] = useSearchParams();
+  const initialCrop = searchParams.get("crop") || "tomato";
   const [imageFile, setImageFile] = useState(null);
-  const [cropType, setCropType] = useState("tomato");
+  const [cropType, setCropType] = useState(initialCrop);
   const [season, setSeason] = useState("auto");
+  const [accessRequested, setAccessRequested] = useState(false);
+  const { t } = useTranslation();
 
-  const { predict, result, isLoading, error } = usePrediction();
+  const { predict, result, isLoading, error, quotaExceeded } = usePrediction();
   const { sendVoice, voiceResult } = useVoice();
 
   function handleSubmit() {
@@ -35,7 +42,7 @@ export default function DiagnosePage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Diagnose Your Crop</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">{t("diagnose.title")}</h1>
 
       {!result && !isLoading && (
         <div className="space-y-5">
@@ -47,20 +54,43 @@ export default function DiagnosePage() {
           </div>
 
           <div className="border-t border-gray-200 pt-4">
-            <p className="text-sm text-gray-500 mb-2">Or ask by voice:</p>
+            <p className="text-sm text-gray-500 mb-2">{t("diagnose.voiceLabel")}</p>
             <VoiceInput onRecordingComplete={(blob) => sendVoice(blob)} />
           </div>
 
           <Button onClick={handleSubmit} disabled={!imageFile}
             className="w-full py-3 text-base">
-            <Search className="w-5 h-5" /> Analyze Crop
+            <Search className="w-5 h-5" /> {t("diagnose.analyzeBtn")}
           </Button>
 
-          {error && <ErrorAlert message={error} onRetry={handleReset} />}
+          {quotaExceeded && (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 text-center">
+              <ShieldAlert className="w-8 h-8 text-amber-500 mx-auto mb-2" />
+              <p className="text-amber-800 font-medium mb-1">{t("quota.exceeded")}</p>
+              <p className="text-amber-600 text-sm mb-4">{t("quota.contactAdmin")}</p>
+              {accessRequested ? (
+                <p className="text-green-700 text-sm font-medium">{t("quota.requestSent")}</p>
+              ) : (
+                <Button
+                  variant="secondary"
+                  onClick={async () => {
+                    try {
+                      await api.requestAccess();
+                      setAccessRequested(true);
+                    } catch {}
+                  }}
+                >
+                  {t("quota.requestBtn")}
+                </Button>
+              )}
+            </div>
+          )}
+
+          {error && !quotaExceeded && <ErrorAlert message={error} onRetry={handleReset} />}
         </div>
       )}
 
-      {isLoading && <LoadingSpinner message="Analyzing your crop leaf..." />}
+      {isLoading && <LoadingSpinner message={t("diagnose.analyzing")} />}
 
       {result && (
         <div>
@@ -72,7 +102,7 @@ export default function DiagnosePage() {
 
           <div className="mt-6 text-center">
             <Button variant="secondary" onClick={handleReset}>
-              Diagnose Another Crop
+              {t("diagnose.resetBtn")}
             </Button>
           </div>
         </div>
@@ -81,7 +111,7 @@ export default function DiagnosePage() {
       {voiceResult && !result && (
         <div className="mt-6">
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
-            <p className="text-sm text-blue-800 font-medium">You said:</p>
+            <p className="text-sm text-blue-800 font-medium">{t("diagnose.youSaid")}</p>
             <p className="text-blue-700 italic">&quot;{voiceResult.transcription.text}&quot;</p>
           </div>
           <TreatmentPanel treatment={{ text: voiceResult.advice.text, was_translated: false }} />

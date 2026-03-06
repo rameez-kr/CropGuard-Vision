@@ -1,18 +1,30 @@
-import { Link, useLocation } from "react-router-dom";
-import { Leaf, Menu, X } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Leaf, Menu, X, LogIn, LogOut, UserCircle, Shield } from "lucide-react";
 import { useState } from "react";
 import LanguagePicker from "../common/LanguagePicker";
+import { useAuth } from "../../context/AuthContext";
+import { useTranslation } from "../../hooks/useTranslation";
 
 export default function Header() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated, isAdmin, user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { t } = useTranslation();
 
   const links = [
-    { to: "/", label: "Home" },
-    { to: "/diagnose", label: "Diagnose" },
-    { to: "/history", label: "History" },
-    { to: "/about", label: "About" },
+    { to: "/", label: t("nav.home") },
+    { to: "/diagnose", label: t("nav.diagnose") },
+    { to: "/history", label: t("nav.history") },
+    { to: "/about", label: t("nav.about") },
+    ...(isAdmin ? [{ to: "/admin", label: t("nav.admin"), icon: Shield }] : []),
   ];
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+    setMenuOpen(false);
+  };
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -31,6 +43,30 @@ export default function Header() {
             >{link.label}</Link>
           ))}
           <LanguagePicker />
+
+          {isAuthenticated ? (
+            <div className="flex items-center gap-3 ml-2">
+              <span className="flex items-center gap-1.5 text-sm text-gray-700">
+                <UserCircle className="w-5 h-5 text-green-600" />
+                {user?.name?.split(" ")[0]}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-1 text-sm text-gray-500 hover:text-red-600 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                {t("nav.logout")}
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="flex items-center gap-1.5 ml-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors"
+            >
+              <LogIn className="w-4 h-4" />
+              {t("nav.signin")}
+            </Link>
+          )}
         </nav>
 
         <button className="md:hidden p-2" onClick={() => setMenuOpen(!menuOpen)}
@@ -48,6 +84,31 @@ export default function Header() {
             >{link.label}</Link>
           ))}
           <div className="pt-2"><LanguagePicker /></div>
+          <div className="pt-2 border-t border-gray-100">
+            {isAuthenticated ? (
+              <div className="flex items-center justify-between py-2">
+                <span className="flex items-center gap-1.5 text-sm text-gray-700">
+                  <UserCircle className="w-5 h-5 text-green-600" />
+                  {user?.name}
+                </span>
+                <button onClick={handleLogout}
+                  className="text-sm text-red-600 hover:text-red-700 font-medium">
+                  {t("nav.logout")}
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <Link to="/login" onClick={() => setMenuOpen(false)}
+                  className="flex-1 text-center py-2 bg-green-600 text-white rounded-lg text-sm font-medium">
+                  {t("nav.signin")}
+                </Link>
+                <Link to="/signup" onClick={() => setMenuOpen(false)}
+                  className="flex-1 text-center py-2 border border-green-600 text-green-600 rounded-lg text-sm font-medium">
+                  {t("nav.signup")}
+                </Link>
+              </div>
+            )}
+          </div>
         </nav>
       )}
     </header>

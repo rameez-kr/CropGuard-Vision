@@ -2,11 +2,13 @@ import { useState, useRef, useEffect } from "react";
 import { Mic, Square } from "lucide-react";
 import audioService from "../../services/audioService";
 import { MAX_VOICE_DURATION_SECONDS } from "../../constants/config";
+import { useTranslation } from "../../hooks/useTranslation";
 
 export default function VoiceInput({ onRecordingComplete }) {
   const [isRecording, setIsRecording] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const timerRef = useRef(null);
+  const { t } = useTranslation();
 
   async function startRecording() {
     try {
@@ -15,7 +17,7 @@ export default function VoiceInput({ onRecordingComplete }) {
       setSeconds(0);
       timerRef.current = setInterval(() => setSeconds((s) => s + 1), 1000);
     } catch {
-      alert("Microphone access is required for voice input.");
+      alert(t("voice.micRequired"));
     }
   }
 
@@ -49,9 +51,11 @@ export default function VoiceInput({ onRecordingComplete }) {
       )}
       <div className="text-sm text-gray-600">
         {isRecording ? (
-          <span className="text-red-600 font-medium">Recording... {seconds}s / {MAX_VOICE_DURATION_SECONDS}s</span>
+          <span className="text-red-600 font-medium">
+            {t("voice.recording").replace("{seconds}", seconds).replace("{max}", MAX_VOICE_DURATION_SECONDS)}
+          </span>
         ) : (
-          <span>Tap to speak your symptoms</span>
+          <span>{t("voice.tapToSpeak")}</span>
         )}
       </div>
     </div>

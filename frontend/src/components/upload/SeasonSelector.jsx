@@ -1,17 +1,20 @@
 import { Sun } from "lucide-react";
-
-const SEASONS = [
-  { value: "auto", label: "Auto-detect" },
-  { value: "kharif", label: "Kharif (Jun–Oct)" },
-  { value: "rabi", label: "Rabi (Nov–Mar)" },
-  { value: "zaid", label: "Zaid (Apr–May)" },
-];
+import { useTranslation } from "../../hooks/useTranslation";
 
 export default function SeasonSelector({ value, onChange }) {
+  const { t } = useTranslation();
+
+  const SEASONS = [
+    { value: "auto", label: t("season.auto") },
+    { value: "kharif", label: t("season.kharif") },
+    { value: "rabi", label: t("season.rabi") },
+    { value: "zaid", label: t("season.zaid") },
+  ];
+
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-        <Sun className="w-4 h-4" /> Season
+        <Sun className="w-4 h-4" /> {t("season.label")}
       </label>
       <div className="flex flex-wrap gap-3">
         {SEASONS.map((s) => (

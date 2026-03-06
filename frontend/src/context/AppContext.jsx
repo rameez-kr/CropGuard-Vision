@@ -20,6 +20,7 @@ const initialState = {
   error: null,
   crops: FALLBACK_CROPS,
   languages: FALLBACK_LANGUAGES,
+  diseases: [],
 };
 
 // ── Reducer ─────────────────────────────────────────────────
@@ -39,6 +40,8 @@ function reducer(state, action) {
       return { ...state, crops: action.payload };
     case "SET_LANGUAGES":
       return { ...state, languages: action.payload };
+    case "SET_DISEASES":
+      return { ...state, diseases: action.payload };
     case "CLEAR_RESULT":
       return { ...state, predictionResult: null, error: null };
     default:
@@ -70,6 +73,10 @@ export function AppProvider({ children }) {
 
     api.getLanguages().then((res) => {
       dispatch({ type: "SET_LANGUAGES", payload: res.data.languages });
+    }).catch(() => {});
+
+    api.getDiseases().then((res) => {
+      dispatch({ type: "SET_DISEASES", payload: res.data.diseases });
     }).catch(() => {});
   }, []);
 

@@ -1,22 +1,24 @@
 import useHistory from "../hooks/useHistory";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 import { Clock } from "lucide-react";
+import { useTranslation } from "../hooks/useTranslation";
 
 export default function HistoryPage() {
   const { predictions, loading } = useHistory();
+  const { t } = useTranslation();
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-        <Clock className="w-6 h-6" /> Diagnosis History
+        <Clock className="w-6 h-6" /> {t("history.title")}
       </h1>
 
-      {loading && <LoadingSpinner message="Loading history..." />}
+      {loading && <LoadingSpinner message={t("history.loading")} />}
 
       {!loading && predictions.length === 0 && (
         <div className="text-center py-16 text-gray-500">
-          <p className="text-lg">No diagnoses yet</p>
-          <p className="text-sm mt-1">Upload a leaf photo to get started.</p>
+          <p className="text-lg">{t("history.empty")}</p>
+          <p className="text-sm mt-1">{t("history.emptyHint")}</p>
         </div>
       )}
 
@@ -33,7 +35,7 @@ export default function HistoryPage() {
                 {p.disease.replace(/_/g, " ")}
               </p>
               <p className="text-sm text-gray-500">
-                {p.crop_type} — {p.confidence}% confidence — {p.language.toUpperCase()}
+                {p.crop_type} — {p.confidence}% {t("history.confidence")} — {p.language.toUpperCase()}
               </p>
             </div>
             <p className="text-xs text-gray-400">
